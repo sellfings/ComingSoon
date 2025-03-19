@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sellfin - Coming Soon</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+        
+        body {
+            background: url('/home3.png') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            height: 100vh;
+            position: relative;
+        }
+        
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px); /* Adjusted to 10% blur */
+        }
+        
+        .header {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .header img {
+            height: 50px;
+        }
+        
+        .content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0px 0px 20px rgba(0,0,0,0.15);
+            max-width: 600px;
+            width: 90%;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 36px;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        
+        #countdown {
+            font-size: 28px;
+            color: #444;
+            font-weight: bold;
+            margin-bottom: 25px;
+        }
+        
+        .code-entry {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+        
+        input {
+            padding: 12px;
+            font-size: 18px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            margin-right: 10px;
+            width: 200px;
+        }
+        
+        button {
+            padding: 12px 24px;
+            font-size: 18px;
+            border: none;
+            background: #ff4081;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        button:hover {
+            background: #d81b60;
+        }
+
+        .mortgage-section {
+            position: relative;
+            z-index: 3;
+            text-align: center;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            width: 80%;
+            max-width: 900px;
+            box-shadow: 0px 0px 20px rgba(0,0,0,0.15);
+            margin-top: 30px;
+        }
+        
+        .mortgage-section h2 {
+            font-size: 30px;
+            color: #333;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        
+        .mortgage-section p {
+            font-size: 18px;
+            color: #555;
+            margin-bottom: 20px;
+        }
+        
+        .chart-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay"></div>
+    
+    <div class="header">
+        <img src="/logo.png" alt="Sellfin Logo"> 
+    </div>
+    
+    <div class="content">
+        <h1>Coming Soon</h1>
+        <p id="countdown"></p>
+        <p>Enter your code to join the demo:</p>
+        <div class="code-entry">
+            <input type="text" id="code" placeholder="Enter code">
+            <button onclick="checkCode()">Join</button>
+        </div>
+    </div>
+
+    <div class="mortgage-section">
+        <h2>Sellfin will be the cheapest and fastest way of owning a home</h2>
+        <p>Sellfin simplifies home financing by reducing costs and eliminating unnecessary barriers. Our platform ensures lower monthly payments and faster home equity growth compared to traditional methods.</p>
+        <div class="chart-container">
+            <img src="/Figure_1.png" alt="Mortgage Cost Comparison Chart" style="width:100%; border-radius: 10px;">
+        </div>
+    </div>
+    
+    <script>
+        function updateCountdown() {
+            const launchDate = new Date("March 31, 2025 00:00:00").getTime();
+            const now = new Date().getTime();
+            const diff = launchDate - now;
+            
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            document.getElementById("countdown").innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+        }
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+        
+        function checkCode() {
+            const enteredCode = document.getElementById("code").value;
+            if (enteredCode === "SellfinMarch") {
+                window.location.href = "https://demo.sellfin.com";
+            } else {
+                alert("Invalid code. Please try again.");
+            }
+        }
+    </script>
+</body>
+</html>
