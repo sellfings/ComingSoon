@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sellfin Mortgage Comparison</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            text-align: center;
+            background: url('http://134.199.221.141/ComingSoon/img/home3.png') no-repeat center center fixed;
+            background-size: cover;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.9);
+        }
+        .logo {
+            width: 150px;
+            margin-bottom: 20px;
+        }
+        label, input {
+            display: block;
+            margin: 10px auto;
+        }
+        input {
+            padding: 10px;
+            width: 80%;
+        }
+        canvas {
+            margin-top: 20px;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="http://134.199.221.141/ComingSoon/img/logo.png" alt="Sellfin Logo" class="logo">
+        <h1>Sellfin Mortgage Comparison</h1>
+        <label>House Price:</label>
+        <input type="number" id="housePrice" value="500000">
+        <label>Down Payment:</label>
+        <input type="number" id="downPayment" value="50000">
+        <label>Interest Rate (Annual %):</label>
+        <input type="number" id="interestRate" value="8">
+        <label>Loan Term (Years):</label>
+        <input type="number" id="loanTerm" value="5">
+        <button onclick="calculatePayments()">Calculate</button>
+        <canvas id="mortgageChart"></canvas>
+        <table id="monthlyBreakdown"></table>
+    </div>
+    
+    <script>
+        function calculatePayments() {
+            let housePrice = parseFloat(document.getElementById("housePrice").value);
+            let downPayment = parseFloat(document.getElementById("downPayment").value);
+            let loanAmount = housePrice - downPayment;
+            let interestRate = parseFloat(document.getElementById("interestRate").value) / 100;
+            let loanTerm = parseInt(document.getElementById("loanTerm").value);
+            let months = loanTerm * 12;
+            let monthlyRate = interestRate / 12;
+            
+            let traditionalClosingCosts = loanAmount * 0.06; // 6% closing cost for traditional
+            let sellfinDiscount = 0.94; // 6% cheaper than traditional
+            let sellfinClosingCosts = 0; // No closing costs for Sellfin
+            
+            let traditionalPayment = ((loanAmount + traditionalClosingCosts) * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -months));
+            let sellfinPayment = ((loanAmount * sellfinDiscount) * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -months));
+            let interestOnlyPayment = loanAmount * monthlyRate;
+            let sellfinInterestOnlyPayment = (loanAmount * sellfinDiscount) * monthlyRate;
+            
+            let monthsArray = Array.from({ length: months }, (_, i) => i + 1);
+            let traditionalTotal = monthsArray.map(m => traditionalPayment * m);
+            let sellfinTotal = monthsArray.map(m => sellfinPayment * m);
+            let interestOnlyTotal = monthsArray.map(m => interestOnlyPayment * m);
+            let sellfinInterestOnlyTotal = monthsArray.map(m => sellfinInterestOnlyPayment * m);
+            
+            let ctx = document.getElementById("mortgageChart").getContext("2d");
+            new Chart(ctx, {
+                type: "line",
+                data: {
+                    labels: monthsArray,
+                    datasets: [
+                        { label: "Traditional Mortgage", data: traditionalTotal, borderColor: "blue", fill: false },
+                        { label: "Sellfin Mortgage", data: sellfinTotal, borderColor: "green", fill: false },
+                        { label: "Traditional Interest-Only", data: interestOnlyTotal, borderColor: "red", fill: false },
+                        { label: "Sellfin Interest-Only", data: sellfinInterestOnlyTotal, borderColor: "orange", fill: false }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    title: { display: true, text: "Mortgage Payment Comparison" },
+                    scales: { x: { title: { display: true, text: "Months" } }, y: { title: { display: true, text: "Total Cost ($)" } } }
+                }
+            });
+            
+            let table = `<tr><th>Month</th><th>Traditional</th><th>Sellfin</th><th>Traditional Interest-Only</th><th>Sellfin Interest-Only</th></tr>`;
+            for (let i = 0; i < months; i += 12) {
+                table += `<tr><td>${i + 1}</td><td>$${traditionalTotal[i].toFixed(2)}</td><td>$${sellfinTotal[i].toFixed(2)}</td><td>$${interestOnlyTotal[i].toFixed(2)}</td><td>$${sellfinInterestOnlyTotal[i].toFixed(2)}</td></tr>`;
+            }
+            let netSavings = traditionalTotal[months - 1] - sellfinTotal[months - 1];
+            table += `<tr><td colspan="5"><strong>Net Savings with Sellfin: $${netSavings.toFixed(2)}</strong></td></tr>`;
+            document.getElementById("monthlyBreakdown").innerHTML = table;
+        }
+    </script>
+</body>
+</html>
