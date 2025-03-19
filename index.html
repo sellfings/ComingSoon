@@ -19,34 +19,33 @@
             background-size: cover;
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             flex-direction: column;
-            height: 100vh;
+            min-height: 100vh;
             position: relative;
+            overflow-y: auto;
         }
         
         .overlay {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px); /* Adjusted to 10% blur */
+            backdrop-filter: blur(10px); /* Ensures blur effect follows scrolling */
+            z-index: -1;
         }
         
         .header {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
+            margin-top: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
         
         .header img {
-            height: 50px;
+            height: 60px;
         }
         
         .content {
@@ -59,7 +58,7 @@
             box-shadow: 0px 0px 20px rgba(0,0,0,0.15);
             max-width: 600px;
             width: 90%;
-            margin-bottom: 30px;
+            margin-top: 20px;
         }
         
         h1 {
@@ -109,7 +108,7 @@
 
         .mortgage-section {
             position: relative;
-            z-index: 3;
+            z-index: 2;
             text-align: center;
             padding: 40px;
             background: rgba(255, 255, 255, 0.95);
@@ -117,7 +116,7 @@
             width: 80%;
             max-width: 900px;
             box-shadow: 0px 0px 20px rgba(0,0,0,0.15);
-            margin-top: 30px;
+            margin-top: 50px;
         }
         
         .mortgage-section h2 {
@@ -161,7 +160,7 @@
         <h2>Sellfin will be the cheapest and fastest way of owning a home</h2>
         <p>Sellfin simplifies home financing by reducing costs and eliminating unnecessary barriers. Our platform ensures lower monthly payments and faster home equity growth compared to traditional methods.</p>
         <div class="chart-container">
-            <img src="http://134.199.221.141/ComingSoon/img/Figure_2.png" alt="Mortgage Cost Comparison Chart" style="width:100%; border-radius: 10px;">
+            <img src="http://134.199.221.141/ComingSoon/img/Figure_1.png" alt="Mortgage Cost Comparison Chart" style="width:100%; border-radius: 10px;">
         </div>
     </div>
     
