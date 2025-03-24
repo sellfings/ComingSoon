@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sellfin Investment Calculator</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: url('http://134.199.221.141/ComingSoon/img/home3.png') no-repeat center center fixed;
+      background-size: cover;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    .logo {
+      width: 160px;
+      margin-bottom: 20px;
+    }
+    input, select {
+      padding: 10px;
+      margin: 10px;
+      width: 90%;
+    }
+    button {
+      padding: 12px 24px;
+      margin: 20px;
+      font-size: 16px;
+      background: #ff4081;
+      border: none;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+    }
+    th {
+      background: #f0f0f0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="http://134.199.221.141/ComingSoon/img/logo.png" alt="Sellfin Logo" class="logo" />
+    <h1>Sellfin Investment Calculator</h1>
+
+    <label>Property Price:</label>
+    <input type="number" id="propertyPrice" value="500000" />
+
+    <label>Down Payment:</label>
+    <input type="number" id="downPayment" value="50000" />
+
+    <label>Interest Rate (Annual %):</label>
+    <input type="number" id="interestRate" value="8" />
+
+    <label>Loan Term (Years):</label>
+    <input type="number" id="loanTerm" value="5" />
+
+    <label>Monthly Operating Expenses:</label>
+    <input type="number" id="expenses" value="500" />
+
+    <label>Occupancy Rate (Airbnb %):</label>
+    <input type="number" id="occupancy" value="70" />
+
+    <button onclick="calculateInvestment()">Calculate ROI</button>
+
+    <canvas id="roiChart"></canvas>
+    <table id="roiTable"></table>
+  </div>
+
+  <script>
+    function calculateInvestment() {
+      const propertyPrice = parseFloat(document.getElementById("propertyPrice").value);
+      const downPayment = parseFloat(document.getElementById("downPayment").value);
+      const loanAmount = propertyPrice - downPayment;
+      const interestRate = parseFloat(document.getElementById("interestRate").value) / 100;
+      const loanTerm = parseInt(document.getElementById("loanTerm").value);
+      const months = loanTerm * 12;
+      const monthlyRate = interestRate / 12;
+      const expenses = parseFloat(document.getElementById("expenses").value);
+      const occupancy = parseFloat(document.getElementById("occupancy").value) / 100;
+
+      // Estimate income based on property price
+      const estimatedLongTermRent = propertyPrice * 0.01;
+      const estimatedAirbnbIncome = propertyPrice * 0.015;
+
+      const sellfinDiscount = 0.94;
+      const sellfinLoan = loanAmount * sellfinDiscount;
+      const monthlyPayment = (sellfinLoan * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -months));
+
+      const airbnbNet = (estimatedAirbnbIncome * occupancy) - expenses - monthlyPayment;
+      const longTermNet = estimatedLongTermRent - expenses - monthlyPayment;
+
+      let airbnbEquity = 0;
+      let longTermEquity = 0;
+      const airbnbROI = [];
+      const longTermROI = [];
+      const labels = [];
+
+      for (let i = 1; i <= months; i++) {
+        const yearFraction = i / 12;
+        const appreciation = propertyPrice * (Math.pow(1.04, yearFraction) - 1);
+        const inflationFactor = Math.pow(1.04, yearFraction);
+
+        const principalPaid = monthlyPayment - (sellfinLoan * monthlyRate);
+        airbnbEquity += principalPaid;
+        longTermEquity += principalPaid;
+
+        const airbnbValue = ((airbnbNet * i) + airbnbEquity + appreciation) / inflationFactor;
+        const longTermValue = ((longTermNet * i) + longTermEquity + appreciation) / inflationFactor;
+
+        airbnbROI.push(airbnbValue);
+        longTermROI.push(longTermValue);
+        labels.push(i);
+      }
+
+      const ctx = document.getElementById("roiChart").getContext("2d");
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            { label: "Airbnb ROI (Real $)", data: airbnbROI, borderColor: "green", fill: false },
+            { label: "Long-Term ROI (Real $)", data: longTermROI, borderColor: "blue", fill: false }
+          ]
+        },
+        options: {
+          responsive: true,
+          title: { display: true, text: "Net ROI & Real Equity Gain Over Time" },
+          scales: {
+            x: { title: { display: true, text: "Months" } },
+            y: { title: { display: true, text: "Net Profit (Adjusted $)" } }
+          }
+        }
+      });
+
+      const table = `
+        <tr><th>Metric</th><th>Airbnb</th><th>Long-Term</th></tr>
+        <tr><td>Est. Monthly Income</td><td>$${(propertyPrice * 0.015).toFixed(2)}</td><td>$${(propertyPrice * 0.01).toFixed(2)}</td></tr>
+        <tr><td>Monthly Net Income</td><td>$${airbnbNet.toFixed(2)}</td><td>$${longTermNet.toFixed(2)}</td></tr>
+        <tr><td>Total ROI After ${months} Months</td><td>$${airbnbROI[months-1].toFixed(2)}</td><td>$${longTermROI[months-1].toFixed(2)}</td></tr>
+      `;
+
+      document.getElementById("roiTable").innerHTML = table;
+    }
+  </script>
+</body>
+</html>
